@@ -27,13 +27,13 @@ https://github.com/your-username/SwiftUIGenericListView.git
     }
 
     enum ListItem {
-    case horizontal([AnyView])
-    case vertical([AnyView])
+        case horizontal([AnyView])
+        case vertical([AnyView])
     }
+
     
-**Create Your Views
-**    
-    
+**Create Your Views**    
+
     struct CustomHorizontalItemView: View {
     
     let title: String
@@ -57,8 +57,7 @@ https://github.com/your-username/SwiftUIGenericListView.git
         }
     }
     
-**Use the Framework
-**
+**Use the Framework**
 
     struct ContentView: View {
         @StateObject var viewModel = GenericListViewModel(dataSource: SampleDataSource())
