@@ -17,8 +17,8 @@ arduino
 https://github.com/your-username/SwiftUIGenericListView.git
 
 **Usage**
-**Define Your Model
-**    
+**Define Your Model** 
+
     struct SectionItem: Identifiable {
         let id = UUID()
         let title: String
@@ -33,6 +33,7 @@ https://github.com/your-username/SwiftUIGenericListView.git
     
 **Create Your Views
 **    
+    
     struct CustomHorizontalItemView: View {
     
     let title: String
@@ -58,6 +59,7 @@ https://github.com/your-username/SwiftUIGenericListView.git
     
 **Use the Framework
 **
+
     struct ContentView: View {
         @StateObject var viewModel = GenericListViewModel(dataSource: SampleDataSource())
     
