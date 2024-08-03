@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-enum ListItem {
+public enum ListItem {
     case horizontal([AnyView])
     case vertical([AnyView])
 }

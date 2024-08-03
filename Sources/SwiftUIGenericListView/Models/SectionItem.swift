@@ -6,10 +6,15 @@
 //
 import SwiftUI
 
-struct SectionItem: Identifiable {
-    let id = UUID()
-    let title: String
-    let items: ListItem
-    let centerAlignHorizontal: Bool
-}
+public struct SectionItem: Identifiable {
+    public let id = UUID()
+    public let title: String
+    public let items: ListItem
+    public let centerAlignHorizontal: Bool
 
+    public init(title: String, items: ListItem, centerAlignHorizontal: Bool) {
+        self.title = title
+        self.items = items
+        self.centerAlignHorizontal = centerAlignHorizontal
+    }
+}

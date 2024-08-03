@@ -7,6 +7,6 @@
 
 import Foundation
 
-protocol GenericListDataSource {
+public protocol GenericListDataSource {
     func fetchSections() -> [SectionItem]
 }

@@ -6,29 +6,24 @@ import PackageDescription
 let package = Package(
     name: "SwiftUIGenericListView",
     platforms: [
-        .iOS(.v13)
+        .iOS(.v15)
     ],
     products: [
         .library(
             name: "SwiftUIGenericListView",
             targets: ["SwiftUIGenericListView"]),
     ],
-    dependencies: [
-        // Add any dependencies here if needed.
-    ],
+    dependencies: [],
     targets: [
         .target(
             name: "SwiftUIGenericListView",
             dependencies: [],
-            path: "Sources/SwiftUIGenericListView",
-            resources: [
-                .process("Resources")
-            ]
+            path: "Sources/SwiftUIGenericListView"
         ),
         .testTarget(
             name: "SwiftUIGenericListViewTests",
             dependencies: ["SwiftUIGenericListView"],
-            path: "Tests/SwiftUIGenericListViewTests"
+            path: "Tests"
         ),
     ]
 )

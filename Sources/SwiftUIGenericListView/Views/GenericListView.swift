@@ -7,10 +7,14 @@
 
 import SwiftUI
 
-struct GenericListView: View {
-    let sections: [SectionItem]
-         
-    var body: some View {
+public struct GenericListView: View {
+    public let sections: [SectionItem]
+       
+    public init(sections: [SectionItem]) {
+        self.sections = sections
+    }
+       
+    public var body: some View {
         List {
             ForEach(sections) { section in
                 Section(header: Text(section.title)) {

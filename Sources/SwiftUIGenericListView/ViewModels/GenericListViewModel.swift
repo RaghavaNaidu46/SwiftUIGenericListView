@@ -7,15 +7,16 @@
 
 import SwiftUI
 
-class GenericListViewModel: ObservableObject {
-    @Published var sections: [SectionItem] = []
+
+public class GenericListViewModel: ObservableObject {
+    @Published public var sections: [SectionItem] = []
     private let dataSource: any GenericListDataSource
-         
-    init(dataSource: any GenericListDataSource) {
+       
+    public init(dataSource: any GenericListDataSource) {
         self.dataSource = dataSource
         loadSections()
     }
-         
+       
     private func loadSections() {
         sections = dataSource.fetchSections()
     }
