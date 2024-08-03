@@ -17,22 +17,27 @@ https://github.com/your-username/SwiftUIGenericListView.git
 Usage
 Define Your Model
 swift
-Copy code
-struct SectionItem: Identifiable {
-    let id = UUID()
-    let title: String
-    let items: ListItem
-    let centerAlignHorizontal: Bool
-}
 
-enum ListItem {
+Copy code
+    
+    struct SectionItem: Identifiable {
+        let id = UUID()
+        let title: String
+        let items: ListItem
+        let centerAlignHorizontal: Bool
+    }
+
+    enum ListItem {
     case horizontal([AnyView])
     case vertical([AnyView])
-}
+    }
+    
 Create Your Views
 swift
 Copy code
-struct CustomHorizontalItemView: View {
+    
+    struct CustomHorizontalItemView: View {
+    
     let title: String
     
     var body: some View {
@@ -40,26 +45,28 @@ struct CustomHorizontalItemView: View {
             .padding()
             .background(Color.gray.opacity(0.2))
             .cornerRadius(8)
+        }
     }
-}
 
-struct CustomVerticalItemView: View {
-    let title: String
+    struct CustomVerticalItemView: View {
+        let title: String
     
-    var body: some View {
-        Text(title)
-            .padding()
-            .background(Color.blue.opacity(0.2))
-            .cornerRadius(8)
+        var body: some View {
+            Text(title)
+                .padding()
+                .background(Color.blue.opacity(0.2))
+                .cornerRadius(8)
+        }
     }
-}
+    
 Use the Framework
 swift
 Copy code
-struct ContentView: View {
-    @StateObject var viewModel = GenericListViewModel(dataSource: SampleDataSource())
+
+    struct ContentView: View {
+        @StateObject var viewModel = GenericListViewModel(dataSource: SampleDataSource())
     
-    var body: some View {
-        GenericListView(sections: viewModel.sections)
+        var body: some View {
+            GenericListView(sections: viewModel.sections)
+        }
     }
-}
