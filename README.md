@@ -8,17 +8,13 @@ Center-aligned horizontal items when specified
 Support for dynamic item sizes
 Easy to integrate and customize
 Installation
-Use Swift Package Manager to add the package to your Xcode project:
 
+Use Swift Package Manager to add the package to your Xcode project:
 arduino
-Copy code
 https://github.com/your-username/SwiftUIGenericListView.git
 
 Usage
 Define Your Model
-swift
-
-Copy code
     
     struct SectionItem: Identifiable {
         let id = UUID()
@@ -33,8 +29,6 @@ Copy code
     }
     
 Create Your Views
-swift
-Copy code
     
     struct CustomHorizontalItemView: View {
     
@@ -60,8 +54,6 @@ Copy code
     }
     
 Use the Framework
-swift
-Copy code
 
     struct ContentView: View {
         @StateObject var viewModel = GenericListViewModel(dataSource: SampleDataSource())
