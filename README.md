@@ -15,7 +15,7 @@ A SwiftUI framework for creating dynamic lists with both horizontal and vertical
 **Installation**
 
 Use Swift Package Manager to add the package to your Xcode project:
-https://github.com/your-username/SwiftUIGenericListView.git
+https://github.com/RaghavaNaidu46/SwiftUIGenericListView.git
 
 ## Usage
 
