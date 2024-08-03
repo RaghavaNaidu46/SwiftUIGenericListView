@@ -3,20 +3,19 @@
 A SwiftUI framework for creating dynamic lists with both horizontal and vertical items.
 
 **Features**
-Horizontal and vertical list sections.
+- Horizontal and vertical list sections.
 
-Center-aligned horizontal items when specified.
+- Center-aligned horizontal items when specified.
 
-Support for dynamic item sizes.
+- Support for dynamic item sizes.
 
-Easy to integrate and customize.
+- Easy to integrate and customize.
 
 **Installation**
 Use Swift Package Manager to add the package to your Xcode project:
-arduino
 https://github.com/your-username/SwiftUIGenericListView.git
 
-**Usage**
+##Usage
 **Define Your Model** 
 
     struct SectionItem: Identifiable {
