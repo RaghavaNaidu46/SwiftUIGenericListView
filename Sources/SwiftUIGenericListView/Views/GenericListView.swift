@@ -28,6 +28,6 @@ public struct GenericListView: View {
                     }
                 }
             }
-        }
+        }.listSectionSpacing(20)
     }
 }
