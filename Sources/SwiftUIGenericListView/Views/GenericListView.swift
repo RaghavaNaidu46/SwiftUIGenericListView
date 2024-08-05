@@ -21,10 +21,10 @@ public struct GenericListView: View {
                     switch section.items {
                     case .horizontal(let items):
                         HorizontalSectionView(items: items, centerAlign: section.centerAlignHorizontal ?? false)
-                            .background(section.backgroundColor)
+                            .listRowBackground(section.backgroundColor)
                     case .vertical(let items):
                         VerticalSectionView(items: items)
-                            .background(section.backgroundColor)
+                            .listRowBackground(section.backgroundColor)
                     }
                 }
             }
