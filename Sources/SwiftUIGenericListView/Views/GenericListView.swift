@@ -17,12 +17,14 @@ public struct GenericListView: View {
     public var body: some View {
         List {
             ForEach(sections) { section in
-                Section(header: Text(section.title)) {
+                Section(header: Text(section.title ?? "")) {
                     switch section.items {
                     case .horizontal(let items):
-                        HorizontalSectionView(items: items, centerAlign: section.centerAlignHorizontal)
+                        HorizontalSectionView(items: items, centerAlign: section.centerAlignHorizontal ?? false)
+                            .background(section.backgroundColor)
                     case .vertical(let items):
                         VerticalSectionView(items: items)
+                            .background(section.backgroundColor)
                     }
                 }
             }
