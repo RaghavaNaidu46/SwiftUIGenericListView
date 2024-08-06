@@ -19,21 +19,6 @@ https://github.com/RaghavaNaidu46/SwiftUIGenericListView.git
 
 ## Usage
 
-**Define Your Model** 
-
-    struct SectionItem: Identifiable {
-        let id = UUID()
-        let title: String
-        let items: ListItem
-        let centerAlignHorizontal: Bool
-    }
-
-    enum ListItem {
-        case horizontal([AnyView])
-        case vertical([AnyView])
-    }
-
-    
 **Create Your Views**    
 
     struct CustomHorizontalItemView: View {
@@ -63,10 +48,33 @@ https://github.com/RaghavaNaidu46/SwiftUIGenericListView.git
 
     struct ContentView: View {
         @StateObject var viewModel = GenericListViewModel(dataSource: SampleDataSource())
-    
         var body: some View {
             GenericListView(sections: viewModel.sections)
         }
     }
+
+**Data Source**
+    
+    struct SampleDataSource: GenericListDataSource {
+        func fetchSections() -> [SectionItem] {
+            return [
+                SectionItem(title: "Horizontal Section Centered", items: .horizontal([
+                    AnyView(CustomHorizontalItemView(title: "Horizontal 1")),
+                    AnyView(CustomHorizontalItemView(title: "Horizontal 2"))
+                ]), centerAlignHorizontal: true),
+                SectionItem(title: "Horizontal Section Not Centered", items: .horizontal([
+                    AnyView(CustomHorizontalItemView(title: "Horizontal 3")),
+                    AnyView(CustomHorizontalItemView(title: "Horizontal 4")),
+                    AnyView(CustomHorizontalItemView(title: "Horizontal 5"))
+                ]), centerAlignHorizontal: false),
+                SectionItem(title: "Vertical Section", items: .vertical([
+                    AnyView(CustomVerticalItemView(title: "Vertical 1")),
+                    AnyView(CustomVerticalItemView(title: "Vertical 2")),
+                    AnyView(CustomVerticalItemView(title: "Vertical 3"))
+                ]), centerAlignHorizontal: false)
+            ]
+        }
+    }
+
 
 ## Happy Coding.
