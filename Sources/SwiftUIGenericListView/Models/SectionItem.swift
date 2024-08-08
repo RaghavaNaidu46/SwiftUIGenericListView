@@ -13,17 +13,21 @@ public struct SectionItem: Identifiable {
     public let centerAlignHorizontal: Bool?
     public let backgroundColor: Color?
     public let sectionStyle: SectionStyle?
+    public let action: ((Int) -> Void)?
     
     public init(
         title: String? = nil,
         items: ListItem,
         centerAlignHorizontal: Bool? = false,
         backgroundColor: Color? = nil,
-        sectionStyle: SectionStyle? = nil) {
-            self.title = title
-            self.items = items
-            self.centerAlignHorizontal = centerAlignHorizontal
-            self.backgroundColor = backgroundColor
-            self.sectionStyle = sectionStyle
-        }
+        sectionStyle: SectionStyle? = nil,
+        action: ((Int) -> Void)? = nil
+    ) {
+        self.title = title
+        self.items = items
+        self.centerAlignHorizontal = centerAlignHorizontal
+        self.backgroundColor = backgroundColor
+        self.sectionStyle = sectionStyle
+        self.action = action
+    }
 }

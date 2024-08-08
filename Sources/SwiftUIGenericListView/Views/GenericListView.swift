@@ -33,10 +33,10 @@ public struct GenericListView: View {
                             Section() {
                                 switch section.items {
                                 case .horizontal(let items):
-                                    HorizontalSectionView(items: items, centerAlign: section.centerAlignHorizontal ?? false)
+                                    HorizontalSectionView(items: items, centerAlign: section.centerAlignHorizontal ?? false, action: section.action)
                                         .listRowBackground(section.backgroundColor ?? section.sectionStyle?.backgroundColor)
                                 case .vertical(let items):
-                                    VerticalSectionView(items: items)
+                                    VerticalSectionView(items: items,action: section.action)
                                         .listRowBackground(section.backgroundColor ?? section.sectionStyle?.backgroundColor)
                                 }
                             } header: {
