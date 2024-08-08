@@ -9,14 +9,16 @@ import SwiftUI
 
 public struct FlowLayoutSectionView: View {
     let items: [AnyView]
+    let action: ((Int) -> Void)?
     
     public var body: some View {
-        FlowLayout(items: items)
+        FlowLayout(items: items, action: action)
     }
 }
 
 struct FlowLayout: View {
     let items: [AnyView]
+    let action: ((Int) -> Void)?
     @State private var totalHeight = CGFloat.zero
     
     var body: some View {
@@ -57,6 +59,9 @@ struct FlowLayout: View {
                         }
                         return result
                     })
+                    .onTapGesture {
+                        action?(index)
+                    }
             }
         }
         .background(viewHeightReader($totalHeight))

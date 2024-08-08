@@ -39,10 +39,10 @@ public struct GenericListView: View {
                                     VerticalSectionView(items: items,action: section.action)
                                         .listRowBackground(section.backgroundColor ?? section.sectionStyle?.backgroundColor)
                                 case .flow(let items):
-                                    FlowLayoutSectionView(items: items)
+                                    FlowLayoutSectionView(items: items, action: section.action)
                                         .listRowBackground(section.backgroundColor ?? section.sectionStyle?.backgroundColor)
                                 case .expandableTextView(let viewModel):
-                                    ExpandableTextView(viewModel: viewModel)
+                                    ExpandableTextView(viewModel: viewModel, action: viewModel.action)
                                         .frame(minHeight: viewModel.dynamicHeight, maxHeight: .infinity)
                                         .listRowBackground(section.backgroundColor ?? section.sectionStyle?.backgroundColor)
                                 }

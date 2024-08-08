@@ -13,18 +13,23 @@ import UIKit
 public class ExpandableTextViewModel: ObservableObject {
     @Published var text: String
     @Published var dynamicHeight: CGFloat
-
-    public init(text: String, dynamicHeight: CGFloat) {
+    let action: ((String) -> Void)?
+    
+    public init(text: String, dynamicHeight: CGFloat, action: ((String) -> Void)?) {
         self.text = text
         self.dynamicHeight = dynamicHeight
+        self.action = action
     }
 }
 
 public struct ExpandableTextView: UIViewRepresentable {
+    let action: ((String) -> Void)?
+    
     @ObservedObject var viewModel: ExpandableTextViewModel
 
-    public init(viewModel: ExpandableTextViewModel) {
+    public init(viewModel: ExpandableTextViewModel, action: ((String) -> Void)?) {
         self.viewModel = viewModel
+        self.action = action
     }
 
     public func makeUIView(context: Context) -> UITextView {
@@ -37,7 +42,10 @@ public struct ExpandableTextView: UIViewRepresentable {
     }
 
     public func updateUIView(_ uiView: UITextView, context: Context) {
-        uiView.text = viewModel.text
+        if uiView.text != viewModel.text {
+            uiView.text = viewModel.text
+        }
+        
         DispatchQueue.main.async {
             let size = uiView.sizeThatFits(CGSize(width: uiView.frame.width, height: CGFloat.greatestFiniteMagnitude))
             if self.viewModel.dynamicHeight != size.height {
@@ -58,7 +66,10 @@ public struct ExpandableTextView: UIViewRepresentable {
         }
 
         public func textViewDidChange(_ textView: UITextView) {
+            let selectedRange = textView.selectedRange
             self.viewModel.text = textView.text
+            textView.selectedRange = selectedRange
+            viewModel.action?(textView.text)
         }
     }
 }
