@@ -11,6 +11,8 @@ public struct SectionItem: Identifiable {
     public let title: String?
     public let items: ListItem
     public let centerAlignHorizontal: Bool?
+    public let canMagnify: Bool?
+    public let selectedItem: Int?
     public let backgroundColor: Color?
     public let sectionStyle: SectionStyle?
     public let action: ((Int) -> Void)?
@@ -19,6 +21,8 @@ public struct SectionItem: Identifiable {
         title: String? = nil,
         items: ListItem,
         centerAlignHorizontal: Bool? = false,
+        canMagnify: Bool? = false,
+        selectedItem: Int? = nil,
         backgroundColor: Color? = nil,
         sectionStyle: SectionStyle? = nil,
         action: ((Int) -> Void)? = nil
@@ -26,8 +30,10 @@ public struct SectionItem: Identifiable {
         self.title = title
         self.items = items
         self.centerAlignHorizontal = centerAlignHorizontal
+        self.canMagnify = canMagnify
         self.backgroundColor = backgroundColor
         self.sectionStyle = sectionStyle
         self.action = action
+        self.selectedItem = selectedItem
     }
 }

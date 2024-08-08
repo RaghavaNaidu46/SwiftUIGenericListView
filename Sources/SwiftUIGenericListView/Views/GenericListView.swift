@@ -33,7 +33,7 @@ public struct GenericListView: View {
                             Section() {
                                 switch section.items {
                                 case .horizontal(let items):
-                                    HorizontalSectionView(items: items, centerAlign: section.centerAlignHorizontal ?? false, action: section.action)
+                                    HorizontalSectionView(items: items, centerAlign: section.centerAlignHorizontal ?? false, action: section.action, canMagnify: section.canMagnify ?? false, selectedItem: section.selectedItem)
                                         .listRowBackground(section.backgroundColor ?? section.sectionStyle?.backgroundColor)
                                 case .vertical(let items):
                                     VerticalSectionView(items: items,action: section.action)
