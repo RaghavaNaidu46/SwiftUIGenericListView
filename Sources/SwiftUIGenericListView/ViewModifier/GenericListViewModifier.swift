@@ -1,5 +1,5 @@
 //
-//  File.swift
+//  GenericListViewModifier.swift
 //  
 //
 //  Created by Raghava Dokala on 06/08/24.

@@ -10,4 +10,6 @@ import SwiftUI
 public enum ListItem {
     case horizontal([AnyView])
     case vertical([AnyView])
+    case flow([AnyView])
+    case expandableTextView(ExpandableTextViewModel)
 }

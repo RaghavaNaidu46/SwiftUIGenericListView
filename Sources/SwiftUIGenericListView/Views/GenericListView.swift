@@ -33,10 +33,17 @@ public struct GenericListView: View {
                             Section() {
                                 switch section.items {
                                 case .horizontal(let items):
-                                    HorizontalSectionView(items: items, centerAlign: section.centerAlignHorizontal ?? false, action: section.action, canMagnify: section.canMagnify ?? false, selectedItem: section.selectedItem)
+                                    HorizontalSectionView(items: items, centerAlign: section.centerAlignHorizontal ?? false, canMagnify: section.canMagnify ?? false, selectedItem: section.selectedItem, action: section.action)
                                         .listRowBackground(section.backgroundColor ?? section.sectionStyle?.backgroundColor)
                                 case .vertical(let items):
                                     VerticalSectionView(items: items,action: section.action)
+                                        .listRowBackground(section.backgroundColor ?? section.sectionStyle?.backgroundColor)
+                                case .flow(let items):
+                                    FlowLayoutSectionView(items: items)
+                                        .listRowBackground(section.backgroundColor ?? section.sectionStyle?.backgroundColor)
+                                case .expandableTextView(let viewModel):
+                                    ExpandableTextView(viewModel: viewModel)
+                                        .frame(minHeight: viewModel.dynamicHeight, maxHeight: .infinity)
                                         .listRowBackground(section.backgroundColor ?? section.sectionStyle?.backgroundColor)
                                 }
                             } header: {
@@ -56,6 +63,14 @@ public struct GenericListView: View {
                     .listSectionSpacing(20)
                 }.frame(width: geometry.size.width, height: geometry.size.height)
             }.background(scrollViewBackground)
+                .gesture(
+                    DragGesture().onChanged { _ in
+                        self.hideKeyboard()
+                    }
+                )
+                .onTapGesture {
+                    self.hideKeyboard()
+                }
         }
         
     }

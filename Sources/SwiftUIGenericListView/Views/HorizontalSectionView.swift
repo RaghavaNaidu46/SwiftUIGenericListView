@@ -11,9 +11,9 @@ public struct HorizontalSectionView: View {
     let items: [AnyView]
     let centerAlign: Bool
     var contentHeight: CGFloat = 0
-    let action: ((Int) -> Void)?
     let canMagnify: Bool
     var selectedItem: Int?
+    let action: ((Int) -> Void)?
     
     @State private var selectedIndex: Int? = nil
     

@@ -1,5 +1,5 @@
 //
-//  File.swift
+//  GenericListSectionModifier.swift
 //  
 //
 //  Created by Raghava Dokala on 07/08/24.
