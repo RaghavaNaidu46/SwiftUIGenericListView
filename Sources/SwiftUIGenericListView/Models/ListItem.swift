@@ -12,4 +12,5 @@ public enum ListItem {
     case vertical([AnyView])
     case flow([AnyView])
     case expandableTextView(ExpandableTextViewModel)
+    case staticHView([AnyView])
 }
