@@ -9,19 +9,12 @@ import SwiftUI
 
 public struct FlowLayoutSectionView: View {
     let items: [AnyView]
-    let action: ((Int) -> Void)?
-    
-    public var body: some View {
-        FlowLayout(items: items, action: action)
-    }
-}
-
-struct FlowLayout: View {
-    let items: [AnyView]
+    let rowStyle:SectionRowStyle?
     let action: ((Int) -> Void)?
     @State private var totalHeight = CGFloat.zero
+    @State private var selectedIndices = Set<Int>()  // State to track selected items
     
-    var body: some View {
+    public var body: some View {
         VStack {
             GeometryReader { geometry in
                 self.generateContent(in: geometry)
@@ -37,8 +30,14 @@ struct FlowLayout: View {
         return ZStack(alignment: .topLeading) {
             ForEach(0..<self.items.count, id: \.self) { index in
                 self.items[index]
+                    .background(selectedIndices.contains(index) ? rowStyle?.selectedRowBackgroundColor : Color.clear)  // Light green background for selected items
+                    .cornerRadius(13)
+                    .overlay(RoundedRectangle(cornerRadius: 13)
+                        .stroke((selectedIndices.contains(index) ? rowStyle!.selectedRowBorderColor : Color.gray) ?? Color.clear,
+                                lineWidth: rowStyle?.rowBorderWidth ?? 1))
+                    .clipShape(RoundedRectangle(cornerRadius: 13))
                     .padding([.horizontal, .vertical], 4)
-                    .alignmentGuide(.leading, computeValue: { d in
+                    .alignmentGuide(.leading) { d in
                         if (abs(width - d.width) > g.size.width) {
                             width = 0
                             height -= d.height
@@ -51,15 +50,20 @@ struct FlowLayout: View {
                             width -= d.width
                         }
                         return result
-                    })
-                    .alignmentGuide(.top, computeValue: { _ in
+                    }
+                    .alignmentGuide(.top) { d in
                         let result = height
                         if index == self.items.count - 1 {
                             height = 0
                         }
                         return result
-                    })
+                    }
                     .onTapGesture {
+                        if selectedIndices.contains(index) {
+                            selectedIndices.remove(index)  // Deselect if already selected
+                        } else {
+                            selectedIndices.insert(index)  // Select if not already selected
+                        }
                         action?(index)
                     }
             }
@@ -68,11 +72,11 @@ struct FlowLayout: View {
     }
     
     private func viewHeightReader(_ binding: Binding<CGFloat>) -> some View {
-        return GeometryReader { geo -> Color in
+        GeometryReader { geometry -> Color in
             DispatchQueue.main.async {
-                binding.wrappedValue = geo.size.height
+                binding.wrappedValue = geometry.size.height
             }
-            return .clear
+            return Color.clear
         }
     }
 }

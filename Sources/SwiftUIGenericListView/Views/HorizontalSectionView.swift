@@ -10,9 +10,8 @@ import SwiftUI
 public struct HorizontalSectionView: View {
     let items: [AnyView]
     let centerAlign: Bool
-    var contentHeight: CGFloat = 0
     let canMagnify: Bool
-    var selectedItem: Int?
+    @State var selectedItem: Int? = nil
     let action: ((Int) -> Void)?
     
     @State private var selectedIndex: Int? = nil
@@ -23,11 +22,15 @@ public struct HorizontalSectionView: View {
                 HStack(spacing: 20) {
                     ForEach(0..<items.count, id: \.self) { index in
                         items[index]
-                            .ifTrue(canMagnify){
+                            .ifTrue(canMagnify) {
                                 $0.scaleEffect(selectedIndex == index ? 1.1 : 1.0)
-                                    .padding(selectedIndex == index ? 10 : 0) // Adjust padding based on selection
+                                    .padding(selectedIndex == index ? 10 : 0)
                             }
                             .animation(.easeInOut(duration: 0.2), value: selectedIndex)
+                            .overlay(RoundedRectangle(cornerRadius: 10)
+                                        .stroke(selectedItem == index ? Color.green : Color.gray, lineWidth: 1))
+                            .background(selectedItem == index ? (Color.green.opacity(0.2)) : Color.white)
+                            .clipShape(RoundedRectangle(cornerRadius: 10))
                             .onTapGesture {
                                 selectedIndex = index
                                 action?(index)
@@ -35,18 +38,15 @@ public struct HorizontalSectionView: View {
                     }
                 }
             }
-        }.onAppear(perform: {
+        }
+        .onAppear {
             selectedIndex = selectedItem
-        })
+        }
     }
 }
 
 extension View {
     func ifTrue<T: View>(_ condition: Bool, apply: (Self) -> T) -> some View {
-        if condition {
-            return AnyView(apply(self))
-        } else {
-            return AnyView(self)
-        }
+        condition ? AnyView(apply(self)) : AnyView(self)
     }
 }

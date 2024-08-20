@@ -11,102 +11,115 @@ public struct GenericListView: View {
     public let sections: [SectionItem]?
     public var stretchableBackground: (Bool?, String?)? = (false, nil)
     public var scrollViewBackground: Color?
-    @Binding var contentHeight: CGFloat
-
-    public init(sections: [SectionItem]?, scrollViewBackground: Color? = Color(hex: "#F5F5F5"), stretchableBackground: (Bool?, String?)? = (false, nil), contentHeight: Binding<CGFloat>) {
+    @Binding var contentHeight: CGFloat?
+    
+    public init(sections: [SectionItem]?, scrollViewBackground: Color? = Color(hex: "#F5F5F5"), stretchableBackground: (Bool?, String?)? = (false, nil), contentHeight: Binding<CGFloat?>? = nil) {
         self.sections = sections
         self.stretchableBackground = stretchableBackground
         self.scrollViewBackground = scrollViewBackground
-        self._contentHeight = contentHeight
+        self._contentHeight = contentHeight ?? .constant(0)
     }
     
     public var body: some View {
-        GeometryReader { geometry in
-            if let stretchable = stretchableBackground, stretchable.1 != nil {
-                ScrollView {
-                    ZStack(alignment: .top) {
-                        if let stretchable = stretchableBackground {
-                            StretchableBackground(bgImage: stretchable.1 ?? "")
+        if let stretchable = stretchableBackground, stretchable.1 != nil {
+            ScrollView{
+                ZStack{
+                    if let stretchable = stretchableBackground {
+                        StretchableBackground(bgImage: stretchable.1 ?? "")
+                    }
+                    VStack(alignment: .leading, spacing: 20) {
+                        if let sectionItems = sections {
+                            ForEach(sectionItems) { section in
+                                sectionView(section: section)
+                            }
                         }
-                        commonListView(geometry: geometry)
                     }
-                    .frame(width: geometry.size.width, height: geometry.size.height)
                 }
-                .background(scrollViewBackground)
-                .background(GeometryReader {
-                    Color.clear.preference(key: ViewHeightKey.self, value: $0.frame(in: .local).size.height)
-                })
-                .onPreferenceChange(ViewHeightKey.self) { height in
-                    contentHeight = height
-                }
-                .gesture(
-                    DragGesture().onChanged { _ in
-                        self.hideKeyboard()
+            }
+        }else{
+            ScrollView{
+                VStack(alignment: .leading, spacing: 20) {
+                    if let sectionItems = sections {
+                        ForEach(sectionItems) { section in
+                            sectionView(section: section)
+                        }
                     }
-                )
-                .onTapGesture {
-                    self.hideKeyboard()
                 }
-            } else {
-                ZStack(alignment: .top) {
-                    commonListView(geometry: geometry)
-                }
-                .background(GeometryReader {
-                    Color.clear.preference(key: ViewHeightKey.self, value: $0.frame(in: .local).size.height)
+                .background(GeometryReader { proxy in
+                    Color.clear.task {
+                        contentHeight = proxy.size.height
+                    }
+                        .preference(key: HeightPreferenceKey.self, value: proxy.size.height)
                 })
-                .onPreferenceChange(ViewHeightKey.self) { height in
-                    contentHeight = height
-                }
-                .frame(width: geometry.size.width, height: geometry.size.height)
             }
         }
     }
     
     @ViewBuilder
-    private func commonListView(geometry: GeometryProxy) -> some View {
-        List {
-            if let sectionItems = sections{
-                ForEach(sectionItems) { section in
-                    Section() {
-                        switch section.items {
-                        case .horizontal(let items):
-                            HorizontalSectionView(items: items, centerAlign: section.centerAlignHorizontal ?? false, canMagnify: section.canMagnify ?? false, selectedItem: section.selectedItem, action: section.action)
-                                .listRowBackground(section.backgroundColor ?? section.sectionStyle?.backgroundColor)
-                        case .vertical(let items):
-                            VerticalSectionView(items: items, action: section.action)
-                                .listRowBackground(section.backgroundColor ?? section.sectionStyle?.backgroundColor)
-                        case .flow(let items):
-                            FlowLayoutSectionView(items: items, action: section.action)
-                                .listRowBackground(section.backgroundColor ?? section.sectionStyle?.backgroundColor)
-                        case .expandableTextView(let viewModel):
-                            ExpandableTextView(viewModel: viewModel, action: viewModel.action)
-                                .frame(minHeight: viewModel.dynamicHeight, maxHeight: .infinity)
-                                .listRowBackground(section.backgroundColor ?? section.sectionStyle?.backgroundColor)
-                        case .staticHView((let items)):
-                            StaticHView(items: items, action: section.action)
-                        }
-                    } header: {
-                        if let header = section.title {
-                            Text(header)
-                                .font(section.sectionStyle?.headerFont ?? .headline)
-                                .foregroundColor(section.sectionStyle?.headerColor ?? .primary)
-                                .padding(section.sectionStyle?.headerPadding ?? .init())
-                        } else {
-                            EmptyView()
-                                .frame(height: 45)
-                        }
-                    }
-                }
+    private func sectionView(section: SectionItem) -> some View {
+        VStack(alignment: .leading, spacing: 10) {
+            if let header = section.title {
+                Text(header)
+                    .background(section.sectionStyle?.sectionStyle?.backgroundColor)
+                    .fixedSize(horizontal: false, vertical: true)
+                    .multilineTextAlignment(section.sectionStyle?.sectionStyle?.headerTextAlignment ?? .leading)
+                    .font(section.sectionStyle?.sectionStyle?.headerFont ?? .headline)
+                    .foregroundColor(section.sectionStyle?.sectionStyle?.headerColor ?? .primary)
+                    .padding(section.sectionStyle?.sectionStyle?.headerPadding ?? .init())
+                    .padding(.top, 10)
+            } else {
+                Spacer().frame(height: 0)
             }
+            
+            VStack(alignment: .leading, spacing: 10) {
+                sectionContent(section: section)
+                    .background(GeometryReader { proxy in
+                        Color.clear.task {
+                            if var cHeight = contentHeight{
+                                cHeight += cHeight + proxy.size.height
+                                contentHeight = cHeight
+                            }
+                        }
+                            .preference(key: HeightPreferenceKey.self, value: proxy.size.height)
+                    })
+            }
+            .padding()
+            .background(
+                section.isGrouped
+                ? AnyView(RoundedRectangle(cornerRadius: 10).fill(section.backgroundColor ?? Color.white).shadow(radius: 1))
+                : AnyView(Color.clear)
+            )
         }
-        .scrollContentBackground(.hidden)
-        .listSectionSpacing(20)
+        .padding([.leading, .trailing])
+    }
+    
+    @ViewBuilder
+    private func sectionContent(section: SectionItem) -> some View {
+        switch section.items {
+        case .horizontal(let items):
+            HorizontalSectionView(items: items, centerAlign: section.centerAlignHorizontal ?? false, canMagnify: section.canMagnify ?? false, selectedItem: section.selectedItem, action: section.action)
+                .background(section .backgroundColor ?? section.sectionStyle?.sectionStyle?.backgroundColor)
+        case .vertical(let items):
+                VerticalSectionView(items: items, action: section.action)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .background(section.backgroundColor ?? section.sectionStyle?.sectionStyle?.backgroundColor)
+            
+        case .flow(let items):
+            FlowLayoutSectionView(items: items, rowStyle: section.sectionStyle?.rowStyle, action: section.action)
+                .background(section.backgroundColor ?? section.sectionStyle?.sectionStyle?.backgroundColor)
+        case .expandableTextView(let viewModel):
+            ExpandableTextView(viewModel: viewModel)
+                .frame(minHeight: viewModel.dynamicHeight, maxHeight: .infinity)
+                .background(section.backgroundColor ?? section.sectionStyle?.sectionStyle?.backgroundColor)
+        case .staticHView(let items):
+            StaticHView(items: items, centerAlign: section.centerAlignHorizontal ?? false, action: section.action)
+                .background(section.backgroundColor ?? section.sectionStyle?.sectionStyle?.backgroundColor)
+        }
     }
 }
 
-
-struct ViewHeightKey: PreferenceKey {
-    static var defaultValue: CGFloat = 0
+struct HeightPreferenceKey: PreferenceKey {
+    static var defaultValue: CGFloat = .zero
     static func reduce(value: inout CGFloat, nextValue: () -> CGFloat) {
         value = nextValue()
     }

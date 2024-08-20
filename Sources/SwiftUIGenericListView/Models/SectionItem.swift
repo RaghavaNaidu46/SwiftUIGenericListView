@@ -6,7 +6,7 @@
 //
 import SwiftUI
 
-public struct SectionItem: Identifiable {
+public struct SectionItem: Identifiable, Observable {
     public let id = UUID()
     public let title: String?
     public let items: ListItem
@@ -14,8 +14,10 @@ public struct SectionItem: Identifiable {
     public let canMagnify: Bool?
     public let selectedItem: Int?
     public let backgroundColor: Color?
-    public let sectionStyle: SectionStyle?
+    public let sectionStyle: GenericStyle?
+    public var isGrouped: Bool // New property
     public let action: ((Int) -> Void)?
+    public let selectedIndex: Int?
     
     public init(
         title: String? = nil,
@@ -24,7 +26,9 @@ public struct SectionItem: Identifiable {
         canMagnify: Bool? = false,
         selectedItem: Int? = nil,
         backgroundColor: Color? = nil,
-        sectionStyle: SectionStyle? = nil,
+        sectionStyle: GenericStyle? = nil,
+        isGrouped: Bool = false,
+        selectedIndex: Int? = nil,
         action: ((Int) -> Void)? = nil
     ) {
         self.title = title
@@ -35,5 +39,7 @@ public struct SectionItem: Identifiable {
         self.sectionStyle = sectionStyle
         self.action = action
         self.selectedItem = selectedItem
+        self.isGrouped = isGrouped
+        self.selectedIndex = selectedIndex
     }
 }
