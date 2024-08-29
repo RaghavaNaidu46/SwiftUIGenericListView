@@ -33,11 +33,14 @@ struct ExpandableTextField: View {
             ZStack(alignment: .topLeading) {
                 if viewModel.text.isEmpty {
                     Text(viewModel.placeholder)
+                        .font(.system(size: 14))
                         .foregroundColor(.gray)
-                        .padding(.leading, 4)   // Align with TextEditor padding
+                        .padding(.leading, 10)   // Align with TextEditor padding
                         .padding(.top, 12)      // Align with TextEditor top padding
                 }
                 TextEditor(text: $viewModel.text)
+                    .modifier(CompatibleTextCaseModifier())
+                    .font(.system(size: 14))
                     .focused($isFocused)
                     .frame(minHeight: 100, maxHeight: min(viewModel.dynamicHeight, 100))
                     .padding(4) // Padding to match placeholder alignment
@@ -63,7 +66,7 @@ struct ExpandableTextField: View {
 
     private func calculateHeight(for text: String) -> CGFloat {
         let size = CGSize(width: UIScreen.main.bounds.width - 68, height: .infinity)
-        let attributes: [NSAttributedString.Key: Any] = [.font: UIFont.systemFont(ofSize: 17)]
+        let attributes: [NSAttributedString.Key: Any] = [.font: UIFont.systemFont(ofSize: 14)]
         let boundingRect = NSString(string: text).boundingRect(
             with: size,
             options: .usesLineFragmentOrigin,
@@ -71,5 +74,18 @@ struct ExpandableTextField: View {
             context: nil
         )
         return max(100, boundingRect.height + 40) // 40 for padding
+    }
+}
+
+struct CompatibleTextCaseModifier: ViewModifier {
+
+    @ViewBuilder
+    func body(content: Content) -> some View {
+        if #available(iOS 16.0, *) {
+            content
+                .scrollContentBackground(.hidden)
+        } else {
+            content
+        }
     }
 }
