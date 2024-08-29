@@ -64,6 +64,7 @@ public struct GenericListView: View {
             if let header = section.title {
                 Text(header)
                     .background(section.sectionStyle?.sectionStyle?.backgroundColor)
+                    .frame(maxWidth: .infinity)
                     .fixedSize(horizontal: false, vertical: true)
                     .multilineTextAlignment(section.sectionStyle?.sectionStyle?.headerTextAlignment ?? .leading)
                     .font(section.sectionStyle?.sectionStyle?.headerFont ?? .headline)
