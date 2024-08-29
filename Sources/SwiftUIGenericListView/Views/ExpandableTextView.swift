@@ -1,77 +1,75 @@
 import SwiftUI
 import UIKit
-import SwiftUI
-import UIKit
 
 public class ExpandableTextViewModel: ObservableObject {
-    @Published var text: String
-    @Published var placeHolder: String
-    @Published var dynamicHeight: CGFloat
+    @Published var text: String {
+        didSet {
+            updateBorderColor()
+        }
+    }
+    @Published var placeholder: String
+    @Published var dynamicHeight: CGFloat = 100 // Start with min height
     let action: ((String) -> Void)?
 
-    public init(text: String, placeHolder: String, dynamicHeight: CGFloat = 0, action: ((String) -> Void)? = nil) {
+    public init(text: String, placeholder: String, action: ((String) -> Void)? = nil) {
         self.text = text
-        self.placeHolder = placeHolder
-        self.dynamicHeight = dynamicHeight
+        self.placeholder = placeholder
         self.action = action
+        updateBorderColor()
+    }
+
+    @Published var borderColor: Color = .gray
+
+    private func updateBorderColor() {
+        borderColor = text.isEmpty ? .gray : Color(hex: "089949")
     }
 }
-
-public struct ExpandableTextView: UIViewRepresentable {
+struct ExpandableTextField: View {
     @ObservedObject var viewModel: ExpandableTextViewModel
+    @FocusState private var isFocused: Bool
 
-    public init(viewModel: ExpandableTextViewModel) {
-        self.viewModel = viewModel
-    }
-
-    public func makeUIView(context: Context) -> UITextView {
-        let textView = UITextView()
-        textView.delegate = context.coordinator
-        textView.isScrollEnabled = false
-        textView.font = UIFont.systemFont(ofSize: 16)
-        textView.backgroundColor = .clear
-        textView.textContainerInset = .zero // Remove inset padding
-        textView.textContainer.lineFragmentPadding = 0 // Remove padding for the text container
-        return textView
-    }
-
-    public func updateUIView(_ uiView: UITextView, context: Context) {
-        if uiView.text != viewModel.text {
-            uiView.text = viewModel.text
-        }
-
-        DispatchQueue.main.async {
-            let size = uiView.sizeThatFits(CGSize(width: uiView.frame.width, height: CGFloat.greatestFiniteMagnitude))
-            if self.viewModel.dynamicHeight != size.height {
-                self.viewModel.dynamicHeight = size.height
-            }
-        }
-    }
-
-    public func makeCoordinator() -> Coordinator {
-        return Coordinator(viewModel: viewModel)
-    }
-
-    public class Coordinator: NSObject, UITextViewDelegate {
-        var viewModel: ExpandableTextViewModel
-
-        init(viewModel: ExpandableTextViewModel) {
-            self.viewModel = viewModel
-        }
-
-        public func textViewDidChange(_ textView: UITextView) {
-            let selectedRange = textView.selectedRange
-            self.viewModel.text = textView.text
-            textView.selectedRange = selectedRange
-            viewModel.action?(textView.text)
-            
-            // Adjust height on text change
-            DispatchQueue.main.async {
-                let size = textView.sizeThatFits(CGSize(width: textView.frame.width, height: CGFloat.greatestFiniteMagnitude))
-                if self.viewModel.dynamicHeight != size.height {
-                    self.viewModel.dynamicHeight = size.height
+    var body: some View {
+        VStack {
+            ZStack(alignment: .topLeading) {
+                if viewModel.text.isEmpty {
+                    Text(viewModel.placeholder)
+                        .foregroundColor(.gray)
+                        .padding(.leading, 4)   // Align with TextEditor padding
+                        .padding(.top, 12)      // Align with TextEditor top padding
                 }
+                TextEditor(text: $viewModel.text)
+                    .focused($isFocused)
+                    .frame(minHeight: 100, maxHeight: min(viewModel.dynamicHeight, 100))
+                    .padding(4) // Padding to match placeholder alignment
+                    .background(Color.clear) // Set background to clear
+                    .cornerRadius(8)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 8)
+                            .stroke(Color(UIColor(viewModel.borderColor)), lineWidth: 2)
+                    )
+                    .onChange(of: viewModel.text) { _ in
+                        viewModel.dynamicHeight = calculateHeight(for: viewModel.text)
+                        viewModel.action?(viewModel.text)
+                    }
+                    .onAppear {
+                        viewModel.dynamicHeight = calculateHeight(for: viewModel.text)
+                    }
             }
         }
+        .onTapGesture {
+            isFocused = false
+        }
+    }
+
+    private func calculateHeight(for text: String) -> CGFloat {
+        let size = CGSize(width: UIScreen.main.bounds.width - 68, height: .infinity)
+        let attributes: [NSAttributedString.Key: Any] = [.font: UIFont.systemFont(ofSize: 17)]
+        let boundingRect = NSString(string: text).boundingRect(
+            with: size,
+            options: .usesLineFragmentOrigin,
+            attributes: attributes,
+            context: nil
+        )
+        return max(100, boundingRect.height + 40) // 40 for padding
     }
 }

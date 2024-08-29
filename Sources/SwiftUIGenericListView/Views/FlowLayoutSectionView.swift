@@ -10,7 +10,7 @@ import SwiftUI
 public struct FlowLayoutSectionView: View {
     let items: [AnyView]
     let rowStyle:SectionRowStyle?
-    let action: ((Int) -> Void)?
+    let action: ((Set<Int>) -> Void)?
     @State private var totalHeight = CGFloat.zero
     @State private var selectedIndices = Set<Int>()  // State to track selected items
     
@@ -33,7 +33,7 @@ public struct FlowLayoutSectionView: View {
                     .background(selectedIndices.contains(index) ? rowStyle?.selectedRowBackgroundColor : Color.clear)  // Light green background for selected items
                     .cornerRadius(13)
                     .overlay(RoundedRectangle(cornerRadius: 13)
-                        .stroke((selectedIndices.contains(index) ? rowStyle!.selectedRowBorderColor : Color.gray) ?? Color.clear,
+                        .stroke((selectedIndices.contains(index) ? rowStyle?.selectedRowBorderColor : Color.gray) ?? Color.clear,
                                 lineWidth: rowStyle?.rowBorderWidth ?? 1))
                     .clipShape(RoundedRectangle(cornerRadius: 13))
                     .padding([.horizontal, .vertical], 4)
@@ -64,7 +64,7 @@ public struct FlowLayoutSectionView: View {
                         } else {
                             selectedIndices.insert(index)  // Select if not already selected
                         }
-                        action?(index)
+                        action?(selectedIndices)
                     }
             }
         }

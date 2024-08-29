@@ -11,6 +11,7 @@ public struct HorizontalSectionView: View {
     let items: [AnyView]
     let centerAlign: Bool
     let canMagnify: Bool
+    let canHighlight: Bool
     @State var selectedItem: Int? = nil
     let action: ((Int) -> Void)?
     
@@ -22,15 +23,19 @@ public struct HorizontalSectionView: View {
                 HStack(spacing: 20) {
                     ForEach(0..<items.count, id: \.self) { index in
                         items[index]
+                            .ifTrue(canHighlight) {
+                                $0.overlay(RoundedRectangle(cornerRadius: 10)
+                                    .stroke(selectedItem == index ? Color.green : Color.gray, lineWidth: 1))
+                                .background(selectedItem == index ? (Color.green.opacity(0.2)) : Color.white)
+                                .clipShape(RoundedRectangle(cornerRadius: 10))
+                            }
                             .ifTrue(canMagnify) {
                                 $0.scaleEffect(selectedIndex == index ? 1.1 : 1.0)
                                     .padding(selectedIndex == index ? 10 : 0)
                             }
+                            
+                            
                             .animation(.easeInOut(duration: 0.2), value: selectedIndex)
-                            .overlay(RoundedRectangle(cornerRadius: 10)
-                                        .stroke(selectedItem == index ? Color.green : Color.gray, lineWidth: 1))
-                            .background(selectedItem == index ? (Color.green.opacity(0.2)) : Color.white)
-                            .clipShape(RoundedRectangle(cornerRadius: 10))
                             .onTapGesture {
                                 selectedIndex = index
                                 action?(index)

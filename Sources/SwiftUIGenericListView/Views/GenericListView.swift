@@ -11,23 +11,25 @@ public struct GenericListView: View {
     public let sections: [SectionItem]?
     public var stretchableBackground: (Bool?, String?)? = (false, nil)
     public var scrollViewBackground: Color?
+    public var headerMinHeight: CGFloat?
     @Binding var contentHeight: CGFloat?
     
-    public init(sections: [SectionItem]?, scrollViewBackground: Color? = Color(hex: "#F5F5F5"), stretchableBackground: (Bool?, String?)? = (false, nil), contentHeight: Binding<CGFloat?>? = nil) {
+    public init(sections: [SectionItem]?, scrollViewBackground: Color? = Color(hex: "#F5F5F5"), stretchableBackground: (Bool?, String?)? = (false, nil), contentHeight: Binding<CGFloat?>? = nil, headerMinHeight: CGFloat? = 22) {
         self.sections = sections
         self.stretchableBackground = stretchableBackground
         self.scrollViewBackground = scrollViewBackground
+        self.headerMinHeight = headerMinHeight
         self._contentHeight = contentHeight ?? .constant(0)
     }
     
     public var body: some View {
-        if let stretchable = stretchableBackground, stretchable.1 != nil {
-            ScrollView{
+        ScrollView{
+            if let stretchable = stretchableBackground, stretchable.1 != nil {
                 ZStack{
                     if let stretchable = stretchableBackground {
                         StretchableBackground(bgImage: stretchable.1 ?? "")
                     }
-                    VStack(alignment: .leading, spacing: 20) {
+                    VStack(alignment: .leading, spacing: self.headerMinHeight) {
                         if let sectionItems = sections {
                             ForEach(sectionItems) { section in
                                 sectionView(section: section)
@@ -35,10 +37,8 @@ public struct GenericListView: View {
                         }
                     }
                 }
-            }
-        }else{
-            ScrollView{
-                VStack(alignment: .leading, spacing: 20) {
+            }else{
+                VStack(alignment: .leading, spacing: self.headerMinHeight) {
                     if let sectionItems = sections {
                         ForEach(sectionItems) { section in
                             sectionView(section: section)
@@ -49,15 +49,18 @@ public struct GenericListView: View {
                     Color.clear.task {
                         contentHeight = proxy.size.height
                     }
-                        .preference(key: HeightPreferenceKey.self, value: proxy.size.height)
+                    .preference(key: HeightPreferenceKey.self, value: proxy.size.height)
                 })
             }
+        }
+        .onTapGesture {
+            hideKeyboard()
         }
     }
     
     @ViewBuilder
     private func sectionView(section: SectionItem) -> some View {
-        VStack(alignment: .leading, spacing: 10) {
+        VStack(alignment: .leading, spacing: 0) {
             if let header = section.title {
                 Text(header)
                     .background(section.sectionStyle?.sectionStyle?.backgroundColor)
@@ -67,11 +70,13 @@ public struct GenericListView: View {
                     .foregroundColor(section.sectionStyle?.sectionStyle?.headerColor ?? .primary)
                     .padding(section.sectionStyle?.sectionStyle?.headerPadding ?? .init())
                     .padding(.top, 10)
+                    .padding([.leading, .trailing])
             } else {
-                Spacer().frame(height: 0)
+                Spacer()
+                    .frame(height: 0)
             }
             
-            VStack(alignment: .leading, spacing: 10) {
+            VStack(alignment: .leading, spacing: 0) {
                 sectionContent(section: section)
                     .background(GeometryReader { proxy in
                         Color.clear.task {
@@ -90,14 +95,17 @@ public struct GenericListView: View {
                 : AnyView(Color.clear)
             )
         }
-        .padding([.leading, .trailing])
+        .background(GeometryReader { proxy in
+            Color.clear
+                .preference(key: HeightPreferenceKey.self, value: proxy.size.height)
+        })
     }
     
     @ViewBuilder
     private func sectionContent(section: SectionItem) -> some View {
         switch section.items {
         case .horizontal(let items):
-            HorizontalSectionView(items: items, centerAlign: section.centerAlignHorizontal ?? false, canMagnify: section.canMagnify ?? false, selectedItem: section.selectedItem, action: section.action)
+            HorizontalSectionView(items: items, centerAlign: section.centerAlignHorizontal ?? false, canMagnify: section.canMagnify ?? false, canHighlight: section.canHelight ?? false, selectedItem: section.selectedItem, action: section.action)
                 .background(section .backgroundColor ?? section.sectionStyle?.sectionStyle?.backgroundColor)
         case .vertical(let items):
                 VerticalSectionView(items: items, action: section.action)
@@ -105,16 +113,23 @@ public struct GenericListView: View {
                     .background(section.backgroundColor ?? section.sectionStyle?.sectionStyle?.backgroundColor)
             
         case .flow(let items):
-            FlowLayoutSectionView(items: items, rowStyle: section.sectionStyle?.rowStyle, action: section.action)
+            FlowLayoutSectionView(items: items, rowStyle: section.sectionStyle?.rowStyle, action: section.flowAction)
                 .background(section.backgroundColor ?? section.sectionStyle?.sectionStyle?.backgroundColor)
         case .expandableTextView(let viewModel):
-            ExpandableTextView(viewModel: viewModel)
+            ExpandableTextField(viewModel: viewModel)
                 .frame(minHeight: viewModel.dynamicHeight, maxHeight: .infinity)
                 .background(section.backgroundColor ?? section.sectionStyle?.sectionStyle?.backgroundColor)
+                //.padding([.leading, .trailing])
         case .staticHView(let items):
             StaticHView(items: items, centerAlign: section.centerAlignHorizontal ?? false, action: section.action)
                 .background(section.backgroundColor ?? section.sectionStyle?.sectionStyle?.backgroundColor)
+        case .staticButtonView(let item):
+            StaticButtonView(items: item, centerAlign: section.centerAlignHorizontal ?? false, action: section.action)
         }
+    }
+    
+    func hideKeyboard() {
+        UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
     }
 }
 

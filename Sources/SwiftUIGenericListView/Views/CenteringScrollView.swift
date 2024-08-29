@@ -33,9 +33,16 @@ public struct CenteringScrollView<Content: View>: View {
                                     .onAppear {
                                         self.contentWidth = contentGeometry.size.width
                                     }
-                                    .onChange(of: contentGeometry.size.width) { oldValue, newValue in
+                                    .onChange(of: contentGeometry.size.width) { newValue in
+                                        let oldValue = self.contentWidth
                                         self.contentWidth = newValue
+
+                                        // If you need to do something based on the old and new value
+                                        if oldValue != newValue {
+                                            // Perform your action here
+                                        }
                                     }
+
                             })
                         if shouldCenter {
                             Spacer(minLength: max(0, (geometry.size.width - contentWidth) / 2))
