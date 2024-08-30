@@ -8,21 +8,21 @@
 import SwiftUI
 
 // Enum to represent feedback options
-enum FeedbackOption: String, CaseIterable {
+public enum FeedbackOption: String, CaseIterable {
     case bad
     case okay
     case great
 }
 
 // Struct to hold feedback reactions data
-struct FeedbackReactions {
+public struct FeedbackReactions {
     var text: String
     var imageName: String
     var quickComments: [String]
 }
 
 // Protocol to define the data provider for the rate session
-protocol RateSessionDataProvider {
+public protocol RateSessionDataProvider {
     var feedbackTitle: String { get }
     var feedbackEmots: [FeedbackOption: [FeedbackReactions]] { get }
     var quickContentTitle: String { get }
@@ -36,7 +36,7 @@ protocol RateSessionDataProvider {
 
 // Main view for rating a session
 public struct RateSession: View {
-    var dataProvider: RateSessionDataProvider
+    public var dataProvider: RateSessionDataProvider
     @State private var selectedOption: FeedbackOption?
     public var sendAction: (FeedbackViewObject) -> Void // Closure to send data back to the parent view
     @State var feedbackObj = FeedbackViewObject(review: .good, emailId: "")
