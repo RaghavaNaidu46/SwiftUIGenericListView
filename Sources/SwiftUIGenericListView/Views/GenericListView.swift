@@ -86,7 +86,7 @@ public struct GenericListView: View {
                                 contentHeight = cHeight
                             }
                         }
-                            .preference(key: HeightPreferenceKey.self, value: proxy.size.height)
+                        .preference(key: HeightPreferenceKey.self, value: proxy.size.height)
                     })
             }
             .padding()
@@ -106,24 +106,36 @@ public struct GenericListView: View {
     private func sectionContent(section: SectionItem) -> some View {
         switch section.items {
         case .horizontal(let items):
-            HorizontalSectionView(items: items, centerAlign: section.centerAlignHorizontal ?? false, canMagnify: section.canMagnify ?? false, canHighlight: section.canHelight ?? false, selectedItem: section.selectedItem, action: section.action)
-                .background(section .backgroundColor ?? section.sectionStyle?.sectionStyle?.backgroundColor)
+            HorizontalSectionView(items: items,
+                                  centerAlign: section.centerAlignHorizontal ?? false,
+                                  canMagnify: section.canMagnify ?? false,
+                                  canHighlight: section.canHelight ?? false,
+                                  selectedItem: section.selectedItem,
+                                  action: section.action)
+            .background(section .backgroundColor ?? section.sectionStyle?.sectionStyle?.backgroundColor)
         case .vertical(let items):
-                VerticalSectionView(items: items, action: section.action)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .background(section.backgroundColor ?? section.sectionStyle?.sectionStyle?.backgroundColor)
+            VerticalSectionView(items: items,
+                                action: section.action)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .background(section.backgroundColor ?? section.sectionStyle?.sectionStyle?.backgroundColor)
             
         case .flow(let items):
-            FlowLayoutSectionView(items: items, rowStyle: section.sectionStyle?.rowStyle, action: section.flowAction)
-                .background(section.backgroundColor ?? section.sectionStyle?.sectionStyle?.backgroundColor)
+            FlowLayoutSectionView(items: items,
+                                  rowStyle: section.sectionStyle?.rowStyle,
+                                  highlightStyle: section.sectionStyle?.highlightStyle ?? HighlightStyle(),
+                                  action: section.flowAction)
+            .background(section.backgroundColor ?? section.sectionStyle?.sectionStyle?.backgroundColor)
         case .expandableTextView(let viewModel):
             ExpandableTextField(viewModel: viewModel)
                 .frame(minHeight: viewModel.dynamicHeight, maxHeight: .infinity)
                 .background(section.backgroundColor ?? section.sectionStyle?.sectionStyle?.backgroundColor)
-                //.padding([.leading, .trailing])
+            //.padding([.leading, .trailing])
         case .staticHView(let items):
-            StaticHView(items: items, centerAlign: section.centerAlignHorizontal ?? false, action: section.action)
-                .background(section.backgroundColor ?? section.sectionStyle?.sectionStyle?.backgroundColor)
+            StaticHView(items: items,
+                        centerAlign: section.centerAlignHorizontal ?? false,
+                        highlightStyle: section.sectionStyle?.highlightStyle ?? HighlightStyle(),
+                        action: section.action)
+            .background(section.backgroundColor ?? section.sectionStyle?.sectionStyle?.backgroundColor)
         case .staticButtonView(let item):
             StaticButtonView(items: item, centerAlign: section.centerAlignHorizontal ?? false, action: section.action)
         }

@@ -11,11 +11,13 @@ import SwiftUI
 public struct GenericStyle {
     public let sectionStyle:SectionStyle?
     public let rowStyle:SectionRowStyle?
+    public let highlightStyle: HighlightStyle?
     
-    public init(sectionStyle:SectionStyle? = nil, rowStyle:SectionRowStyle? = nil) {
-            self.rowStyle = rowStyle
-            self.sectionStyle = sectionStyle
-        }
+    public init(sectionStyle:SectionStyle? = nil, rowStyle:SectionRowStyle? = nil, highlightStyle:HighlightStyle? = nil) {
+        self.rowStyle = rowStyle
+        self.sectionStyle = sectionStyle
+        self.highlightStyle = highlightStyle
+    }
 }
 
 public struct SectionStyle{
@@ -54,6 +56,7 @@ public struct SectionRowStyle{
     public let rowFont: Font?
     public let rowBorderColor: Color?
     public let selectedRowBorderColor: Color?
+    public let selectedFontColor: Color?
     public let rowPadding: EdgeInsets?
     public let rowShadow:CGFloat?
     public let rowBorderWidth:CGFloat?
@@ -65,6 +68,7 @@ public struct SectionRowStyle{
         rowFont: Font? = nil,
         rowBorderColor: Color? = .gray,
         selectedRowBorderColor: Color? = .clear,
+        selectedFontColor: Color? = .clear,
         rowPadding: EdgeInsets? = nil,
         rowShadow:CGFloat? = 0,
         rowBorderWidth:CGFloat? = 0
@@ -78,6 +82,19 @@ public struct SectionRowStyle{
         self.rowShadow = rowShadow
         self.rowTextAlignment = rowTextAlignment
         self.rowBorderWidth = rowBorderWidth
+        self.selectedFontColor = selectedFontColor
         
+    }
+}
+
+public struct HighlightStyle {
+    let background: Color?
+    let border: Color?
+    let textColor: Color?
+    
+    public init(background: Color? = .clear, border: Color? = .clear, textColor: Color? = .black) {
+        self.background = background
+        self.border = border
+        self.textColor = textColor
     }
 }

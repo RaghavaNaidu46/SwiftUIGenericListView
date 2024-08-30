@@ -9,19 +9,22 @@ public class ExpandableTextViewModel: ObservableObject {
     }
     @Published var placeholder: String
     @Published var dynamicHeight: CGFloat = 100 // Start with min height
+    let highlightStyle:HighlightStyle
     let action: ((String) -> Void)?
 
-    public init(text: String, placeholder: String, action: ((String) -> Void)? = nil) {
+    public init(text: String, placeholder: String, highlightStyle:HighlightStyle, action: ((String) -> Void)? = nil) {
         self.text = text
         self.placeholder = placeholder
+        self.highlightStyle = highlightStyle
         self.action = action
+        
         updateBorderColor()
     }
 
     @Published var borderColor: Color = .gray
 
     private func updateBorderColor() {
-        borderColor = text.isEmpty ? .gray : Color(hex: "089949")
+        borderColor = text.isEmpty ? .gray : highlightStyle.border ?? .gray
     }
 }
 struct ExpandableTextField: View {

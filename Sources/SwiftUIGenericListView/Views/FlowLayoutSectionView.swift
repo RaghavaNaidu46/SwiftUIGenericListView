@@ -10,6 +10,7 @@ import SwiftUI
 public struct FlowLayoutSectionView: View {
     let items: [AnyView]
     let rowStyle:SectionRowStyle?
+    let highlightStyle:HighlightStyle
     let action: ((Set<Int>) -> Void)?
     @State private var totalHeight = CGFloat.zero
     @State private var selectedIndices = Set<Int>()  // State to track selected items
@@ -30,10 +31,11 @@ public struct FlowLayoutSectionView: View {
         return ZStack(alignment: .topLeading) {
             ForEach(0..<self.items.count, id: \.self) { index in
                 self.items[index]
-                    .background(selectedIndices.contains(index) ? rowStyle?.selectedRowBackgroundColor : Color.clear)  // Light green background for selected items
+                    .background(selectedIndices.contains(index) ? highlightStyle.background : Color.clear)  // Light green background for selected items
+                    .foregroundColor((selectedIndices.contains(index) ? highlightStyle.textColor : Color.black))
                     .cornerRadius(13)
                     .overlay(RoundedRectangle(cornerRadius: 13)
-                        .stroke((selectedIndices.contains(index) ? rowStyle?.selectedRowBorderColor : Color.gray) ?? Color.clear,
+                        .stroke((selectedIndices.contains(index) ? highlightStyle.border : Color.gray) ?? Color.clear,
                                 lineWidth: rowStyle?.rowBorderWidth ?? 1))
                     .clipShape(RoundedRectangle(cornerRadius: 13))
                     .padding([.horizontal, .vertical], 4)
