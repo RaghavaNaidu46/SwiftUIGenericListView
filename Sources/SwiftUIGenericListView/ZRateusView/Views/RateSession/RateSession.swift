@@ -16,10 +16,18 @@ public enum FeedbackOption: String, CaseIterable {
 
 // Struct to hold feedback reactions data
 public struct FeedbackReactions {
-    var text: String
-    var imageName: String
-    var quickComments: [String]
+    public var text: String
+    public var imageName: String
+    public var quickComments: [String]
+
+    // Public initializer
+    public init(text: String, imageName: String, quickComments: [String]) {
+        self.text = text
+        self.imageName = imageName
+        self.quickComments = quickComments
+    }
 }
+
 
 // Protocol to define the data provider for the rate session
 public protocol RateSessionDataProvider {
@@ -45,6 +53,11 @@ public struct RateSession: View {
     @StateObject private var viewModel = GenericListViewModel(dataSource: FeedbackDataSource())
     @State private var bg: Color = Color(hex: "F29E39", alpha: 0.1)
 
+    public init(dataProvider: RateSessionDataProvider, sendAction:@escaping (FeedbackViewObject) -> Void ){
+        self.dataProvider = dataProvider
+        self.sendAction = sendAction
+    }
+    
     public var body: some View {
         Color.white // Main content background
             .edgesIgnoringSafeArea(.all)
