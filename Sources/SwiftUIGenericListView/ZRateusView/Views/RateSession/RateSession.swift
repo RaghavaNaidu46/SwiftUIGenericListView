@@ -40,6 +40,7 @@ public protocol RateSessionDataProvider {
     var emojiHighlightStyle: HighlightStyle { get }
     var flowHighlightStyle: HighlightStyle { get }
     var textEntryStyle: HighlightStyle { get }
+    var contentBG: Color { get }
 }
 
 // Main view for rating a session
@@ -52,44 +53,24 @@ public struct RateSession: View {
     @State private var contentHeight: CGFloat? = .zero
     @StateObject private var viewModel = GenericListViewModel(dataSource: FeedbackDataSource())
     @State private var bg: Color = Color(hex: "F29E39", alpha: 0.1)
-
-    public init(dataProvider: RateSessionDataProvider, sendAction:@escaping (FeedbackViewObject) -> Void ){
+    public var cHeight: (CGFloat) -> Void
+    
+    public init(dataProvider: RateSessionDataProvider, sendAction:@escaping (FeedbackViewObject) -> Void, cHeight: @escaping (CGFloat) -> Void){
         self.dataProvider = dataProvider
         self.sendAction = sendAction
+        self.cHeight = cHeight
     }
     
     public var body: some View {
-        Color.white // Main content background
-            .edgesIgnoringSafeArea(.all)
-            .onAppear {
-                showSheet = true
-                viewModel.sections.removeAll()
-                viewModel.sections.append(self.prepareInitialDataSource())
-            }
-            .sheet(isPresented: $showSheet) {
-                if #available(iOS 16.0, *) {
-                    GenericListView(sections: viewModel.sections, contentHeight: $contentHeight, headerMinHeight: 5)
-                        .background($bg.wrappedValue)
-                        .presentationDetents([.height(contentHeight ?? 0)])
-                        .presentationDragIndicator(.visible)
-                        .onDrag {
-                            Color.clear.task {
-                            } as! NSItemProvider
-                        }
-                        .onPreferenceChange(HeightPreferenceKey.self) { value in
-                            print("Content height: \(value)")
-                            contentHeight = value
-                        }
-                } else {
-                    // Fallback for iOS 14 and 15
-                    GenericListView(sections: viewModel.sections, contentHeight: $contentHeight, headerMinHeight: 5)
-                        .background(Color(UIColor(bg))) // Assuming 'bg' is a Color or can be converted to Color
-                        .onPreferenceChange(HeightPreferenceKey.self) { value in
-                            print("Content height: \(value)")
-                            contentHeight = value
-                        }
-                }
-            }
+        VStack{
+            GenericListView(sections: viewModel.sections, contentHeight: $contentHeight, headerMinHeight: 5, cHeight: { hh in
+                cHeight(hh)
+            })
+        }
+        .onAppear {
+            viewModel.sections.removeAll()
+            viewModel.sections.append(self.prepareInitialDataSource())
+        }
     }
 }
 
@@ -102,8 +83,9 @@ extension RateSession {
                            items: .staticHView(self.prepareEmots()),
                            centerAlignHorizontal: true,
                            selectedItem: 1,
+                           backgroundColor: dataProvider.contentBG,
                            sectionStyle: GenericStyle(sectionStyle: SectionStyle(
-                            backgroundColor: .clear,
+                            headerBackgroundColor: dataProvider.contentBG,
                             headerTextAlignment: .center,
                             headerFont: Font.system(size: 25, weight: .semibold),
                             headerColor: .black,
@@ -139,14 +121,13 @@ extension RateSession {
             // Flow items view
             SectionItem(title: dataProvider.quickContentTitle,
                         items: .flow(createFlowViews(target: target)),
-                        centerAlignHorizontal: true,
                         selectedItem: 1,
+                        backgroundColor: dataProvider.contentBG,
                         sectionStyle: GenericStyle(
                             sectionStyle: SectionStyle(
                                 headerTextAlignment: .leading,
                                 headerFont: Font.system(size: 14, weight: .semibold),
-                                headerColor: .black,
-                                headerPadding: EdgeInsets()),
+                                headerColor: .black),
                             highlightStyle: dataProvider.flowHighlightStyle
                         ),
                         flowAction: { index in

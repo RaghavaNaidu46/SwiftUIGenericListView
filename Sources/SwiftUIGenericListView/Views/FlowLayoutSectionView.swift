@@ -12,6 +12,7 @@ public struct FlowLayoutSectionView: View {
     let rowStyle:SectionRowStyle?
     let highlightStyle:HighlightStyle
     let action: ((Set<Int>) -> Void)?
+    let bg : Color
     @State private var totalHeight = CGFloat.zero
     @State private var selectedIndices = Set<Int>()  // State to track selected items
     
@@ -21,6 +22,7 @@ public struct FlowLayoutSectionView: View {
                 self.generateContent(in: geometry)
             }
         }
+        .background(bg)
         .frame(height: totalHeight)
     }
     

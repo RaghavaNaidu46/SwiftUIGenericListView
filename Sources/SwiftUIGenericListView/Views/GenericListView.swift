@@ -13,13 +13,15 @@ public struct GenericListView: View {
     public var scrollViewBackground: Color?
     public var headerMinHeight: CGFloat?
     @Binding var contentHeight: CGFloat?
+    public var cHeight: (CGFloat) -> Void
     
-    public init(sections: [SectionItem]?, scrollViewBackground: Color? = Color(hex: "#F5F5F5"), stretchableBackground: (Bool?, String?)? = (false, nil), contentHeight: Binding<CGFloat?>? = nil, headerMinHeight: CGFloat? = 22) {
+    public init(sections: [SectionItem]?, scrollViewBackground: Color? = Color(hex: "#F5F5F5"), stretchableBackground: (Bool?, String?)? = (false, nil), contentHeight: Binding<CGFloat?>? = nil, headerMinHeight: CGFloat? = 22, cHeight: @escaping (CGFloat) -> Void) {
         self.sections = sections
         self.stretchableBackground = stretchableBackground
         self.scrollViewBackground = scrollViewBackground
         self.headerMinHeight = headerMinHeight
         self._contentHeight = contentHeight ?? .constant(0)
+        self.cHeight = cHeight
     }
     
     public var body: some View {
@@ -48,6 +50,7 @@ public struct GenericListView: View {
                 .background(GeometryReader { proxy in
                     Color.clear.task {
                         contentHeight = proxy.size.height
+                        cHeight(proxy.size.height)
                     }
                     .preference(key: HeightPreferenceKey.self, value: proxy.size.height)
                 })
@@ -63,10 +66,10 @@ public struct GenericListView: View {
         VStack(alignment: .leading, spacing: 0) {
             if let header = section.title {
                 Text(header)
-                    .background(section.sectionStyle?.sectionStyle?.backgroundColor)
-                    .frame(maxWidth: .infinity)
+                    .background(section.sectionStyle?.sectionStyle?.headerBackgroundColor)
                     .fixedSize(horizontal: false, vertical: true)
                     .multilineTextAlignment(section.sectionStyle?.sectionStyle?.headerTextAlignment ?? .leading)
+                    //.frame(maxWidth: .infinity)
                     .font(section.sectionStyle?.sectionStyle?.headerFont ?? .headline)
                     .foregroundColor(section.sectionStyle?.sectionStyle?.headerColor ?? .primary)
                     .padding(section.sectionStyle?.sectionStyle?.headerPadding ?? .init())
@@ -81,9 +84,10 @@ public struct GenericListView: View {
                 sectionContent(section: section)
                     .background(GeometryReader { proxy in
                         Color.clear.task {
-                            if var cHeight = contentHeight{
-                                cHeight += cHeight + proxy.size.height
-                                contentHeight = cHeight
+                            if var cH = contentHeight{
+                                cH += cH + proxy.size.height
+                                contentHeight = cH
+                                cHeight(cH)
                             }
                         }
                         .preference(key: HeightPreferenceKey.self, value: proxy.size.height)
@@ -97,7 +101,13 @@ public struct GenericListView: View {
             )
         }
         .background(GeometryReader { proxy in
-            Color.clear
+            Color.clear.task {
+                if var cH = contentHeight{
+                    cH += cH + proxy.size.height
+                    contentHeight = cH
+                    cHeight(cH)
+                }
+            }
                 .preference(key: HeightPreferenceKey.self, value: proxy.size.height)
         })
     }
@@ -123,7 +133,7 @@ public struct GenericListView: View {
             FlowLayoutSectionView(items: items,
                                   rowStyle: section.sectionStyle?.rowStyle,
                                   highlightStyle: section.sectionStyle?.highlightStyle ?? HighlightStyle(),
-                                  action: section.flowAction)
+                                  action: section.flowAction, bg:section.backgroundColor ?? .white)
             .background(section.backgroundColor ?? section.sectionStyle?.sectionStyle?.backgroundColor)
         case .expandableTextView(let viewModel):
             ExpandableTextField(viewModel: viewModel)
@@ -146,9 +156,9 @@ public struct GenericListView: View {
     }
 }
 
-struct HeightPreferenceKey: PreferenceKey {
-    static var defaultValue: CGFloat = .zero
-    static func reduce(value: inout CGFloat, nextValue: () -> CGFloat) {
+public struct HeightPreferenceKey: PreferenceKey {
+    public static var defaultValue: CGFloat = .zero
+    public static func reduce(value: inout CGFloat, nextValue: () -> CGFloat) {
         value = nextValue()
     }
 }

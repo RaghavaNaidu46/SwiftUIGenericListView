@@ -23,6 +23,7 @@ public struct GenericStyle {
 public struct SectionStyle{
     public let backgroundColor: Color?
     public let headerBackgroundColor: Color?
+    public let headerWidth: CGFloat?
     public let headerTextAlignment: TextAlignment?
     public let headerFont: Font?
     public let headerColor: Color?
@@ -36,7 +37,9 @@ public struct SectionStyle{
         headerFont: Font? = nil,
         headerColor: Color? = .gray,
         headerPadding: EdgeInsets? = nil,
-        shadow:CGFloat? = 0
+        shadow:CGFloat? = 0,
+        headerWidth: CGFloat? = .zero
+        
     ) {
         self.backgroundColor = backgroundColor
         self.headerBackgroundColor = headerBackgroundColor
@@ -45,6 +48,7 @@ public struct SectionStyle{
         self.headerPadding = headerPadding
         self.shadow = shadow
         self.headerTextAlignment = headerTextAlignment
+        self.headerWidth = headerWidth
     }
 }
 
