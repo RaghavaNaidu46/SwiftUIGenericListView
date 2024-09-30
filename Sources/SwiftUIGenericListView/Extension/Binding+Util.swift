@@ -7,8 +7,8 @@
 
 import SwiftUI
 
-extension Binding {
-    func didSet(execute: @escaping (Value) -> Void) -> Binding {
+public extension Binding {
+   public func didSet(execute: @escaping (Value) -> Void) -> Binding {
         return Binding(
             get: { self.wrappedValue },
             set: {

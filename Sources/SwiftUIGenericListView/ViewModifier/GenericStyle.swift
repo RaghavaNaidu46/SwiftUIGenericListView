@@ -92,10 +92,10 @@ public struct SectionRowStyle{
 }
 
 public struct HighlightStyle {
-    let initialBackground: Color?
-    let selectedBackground: Color?
-    let border: Color?
-    let textColor: Color?
+    public let initialBackground: Color?
+    public let selectedBackground: Color?
+    public let border: Color?
+    public let textColor: Color?
     
     public init(initialBackground: Color? = .clear, background: Color? = .clear, border: Color? = .clear, textColor: Color? = .black) {
         self.initialBackground = initialBackground
