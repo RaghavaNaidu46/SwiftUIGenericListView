@@ -11,17 +11,22 @@ public struct GenericListView: View {
     public let sections: [SectionItem]?
     public var stretchableBackground: (Bool?, String?)? = (false, nil)
     public var scrollViewBackground: Color?
+    public var contentPadding: CGFloat = .zero
     public var headerMinHeight: CGFloat?
     @Binding var contentHeight: CGFloat?
     public var cHeight: (CGFloat) -> Void
+    @Binding var returnContentHeight: Bool?
+    @Environment(\.colorScheme) var colorScheme
     
-    public init(sections: [SectionItem]?, scrollViewBackground: Color? = Color(hex: "#F5F5F5"), stretchableBackground: (Bool?, String?)? = (false, nil), contentHeight: Binding<CGFloat?>? = nil, headerMinHeight: CGFloat? = 22, cHeight: @escaping (CGFloat) -> Void) {
+    public init(sections: [SectionItem]?, scrollViewBackground: Color? = Color(hex: "#F5F5F5"), stretchableBackground: (Bool?, String?)? = (false, nil), contentHeight: Binding<CGFloat?>? = nil, contentPadding: CGFloat = .zero, headerMinHeight: CGFloat? = 22, returnContentHeight: Binding<Bool?>? = nil, cHeight: @escaping (CGFloat) -> Void) {
         self.sections = sections
         self.stretchableBackground = stretchableBackground
         self.scrollViewBackground = scrollViewBackground
         self.headerMinHeight = headerMinHeight
         self._contentHeight = contentHeight ?? .constant(0)
         self.cHeight = cHeight
+        self.contentPadding = contentPadding
+        self._returnContentHeight = returnContentHeight ?? .constant(false)
     }
     
     public var body: some View {
@@ -38,6 +43,7 @@ public struct GenericListView: View {
                             }
                         }
                     }
+                    .padding(contentPadding)
                 }
             }else{
                 VStack(alignment: .leading, spacing: self.headerMinHeight) {
@@ -45,15 +51,15 @@ public struct GenericListView: View {
                         ForEach(sectionItems) { section in
                             sectionView(section: section)
                         }
+                        .modifier(GenericListViewBackgroundModifier(contentHeight: $contentHeight,
+                                                                    returnContentHeight: $returnContentHeight,
+                                                                    cHeight: { height in
+                            cHeight(height)
+                        }))
                     }
                 }
-                .background(GeometryReader { proxy in
-                    Color.clear.task {
-                        contentHeight = proxy.size.height
-                        cHeight(proxy.size.height)
-                    }
-                    .preference(key: HeightPreferenceKey.self, value: proxy.size.height)
-                })
+                .padding(contentPadding)
+                
             }
         }
         .onTapGesture {
@@ -69,11 +75,11 @@ public struct GenericListView: View {
                     .background(section.sectionStyle?.sectionStyle?.headerBackgroundColor)
                     .fixedSize(horizontal: false, vertical: true)
                     .multilineTextAlignment(section.sectionStyle?.sectionStyle?.headerTextAlignment ?? .leading)
-                    //.frame(maxWidth: .infinity)
+                //.frame(maxWidth: .infinity)
                     .font(section.sectionStyle?.sectionStyle?.headerFont ?? .headline)
                     .foregroundColor(section.sectionStyle?.sectionStyle?.headerColor ?? .primary)
                     .padding(section.sectionStyle?.sectionStyle?.headerPadding ?? .init())
-                    .padding(.top, 10)
+                    .padding(.top, 30)
                     .padding([.leading, .trailing])
             } else {
                 Spacer()
@@ -82,34 +88,15 @@ public struct GenericListView: View {
             
             VStack(alignment: .leading, spacing: 0) {
                 sectionContent(section: section)
-                    .background(GeometryReader { proxy in
-                        Color.clear.task {
-                            if var cH = contentHeight{
-                                cH += cH + proxy.size.height
-                                contentHeight = cH
-                                cHeight(cH)
-                            }
-                        }
-                        .preference(key: HeightPreferenceKey.self, value: proxy.size.height)
-                    })
             }
-            .padding()
+            .padding([.leading, .trailing])
+            .padding([.vertical], section.verticalSpacing)
             .background(
                 section.isGrouped
                 ? AnyView(RoundedRectangle(cornerRadius: 10).fill(section.backgroundColor ?? Color.white).shadow(radius: 1))
                 : AnyView(Color.clear)
             )
         }
-        .background(GeometryReader { proxy in
-            Color.clear.task {
-                if var cH = contentHeight{
-                    cH += cH + proxy.size.height
-                    contentHeight = cH
-                    cHeight(cH)
-                }
-            }
-                .preference(key: HeightPreferenceKey.self, value: proxy.size.height)
-        })
     }
     
     @ViewBuilder
@@ -144,15 +131,42 @@ public struct GenericListView: View {
             StaticHView(items: items,
                         centerAlign: section.centerAlignHorizontal ?? false,
                         highlightStyle: section.sectionStyle?.highlightStyle ?? HighlightStyle(),
-                        action: section.action)
+                        action: section.action,
+                        selectedItem: section.selectedItem)
             .background(section.backgroundColor ?? section.sectionStyle?.sectionStyle?.backgroundColor)
-        case .staticButtonView(let item):
+        case .singleView(let item):
             StaticButtonView(items: item, centerAlign: section.centerAlignHorizontal ?? false, action: section.action)
         }
     }
     
     func hideKeyboard() {
         UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+    }
+}
+
+struct GenericListViewBackgroundModifier: ViewModifier {
+    @Binding var contentHeight: CGFloat?
+    @Binding var returnContentHeight: Bool?
+    public var cHeight: (CGFloat) -> Void
+    
+    @ViewBuilder
+    func body(content: Content) -> some View {
+        content
+            .ifTrue(returnContentHeight ?? false, apply: { content in
+                content
+                    .background(GeometryReader { proxy in
+                        Color.clear.task {
+                            DispatchQueue.main.async {
+                                if var cH = contentHeight{
+                                    cH += proxy.size.height
+                                    contentHeight = cH
+                                    cHeight(cH)
+                                }
+                            }
+                        }
+                        .preference(key: HeightPreferenceKey.self, value: proxy.size.height)
+                    })
+            })
     }
 }
 

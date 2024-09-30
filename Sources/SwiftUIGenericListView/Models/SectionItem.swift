@@ -20,6 +20,7 @@ public struct SectionItem: Identifiable, Observable {
     public let action: ((Int) -> Void)?
     public let flowAction: ((Set<Int>) -> Void)?
     public let selectedIndex: Int?
+    public let verticalSpacing: CGFloat?
     
     public init(
         title: String? = nil,
@@ -32,6 +33,7 @@ public struct SectionItem: Identifiable, Observable {
         sectionStyle: GenericStyle? = nil,
         isGrouped: Bool = false,
         selectedIndex: Int? = nil,
+        verticalSpacing: CGFloat? = 10,
         action: ((Int) -> Void)? = nil,
         flowAction: ((Set<Int>) -> Void)? = nil
     ) {
@@ -47,5 +49,6 @@ public struct SectionItem: Identifiable, Observable {
         self.selectedIndex = selectedIndex
         self.canHelight = canHelight
         self.flowAction = flowAction
+        self.verticalSpacing = verticalSpacing
     }
 }

@@ -9,6 +9,12 @@ import SwiftUI
 import Combine
 let podBundle = Bundle(for: AssistRateUsFeedbackViewModel.self)
 
+extension CaseIterable where Self: Equatable {
+    var index: Self.AllCases.Index? {
+        return Self.allCases.firstIndex { self == $0 }
+    }
+}
+
 @available(iOS 14.0, *)
 public enum AssistFeedbackdReviews: String,CaseIterable{
     case bad = "bad", okay = "okay" , great = "great", good = "good"

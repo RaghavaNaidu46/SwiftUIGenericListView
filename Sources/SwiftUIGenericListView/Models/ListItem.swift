@@ -13,5 +13,5 @@ public enum ListItem {
     case flow([AnyView])
     case expandableTextView(ExpandableTextViewModel)
     case staticHView([AnyView])
-    case staticButtonView(AnyView)
+    case singleView(AnyView)
 }

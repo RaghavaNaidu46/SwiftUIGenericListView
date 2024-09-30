@@ -15,7 +15,6 @@ public struct StaticButtonView: View {
     public var body: some View {
         items
             .clipped(antialiased: true)
-            .cornerRadius(20)
             .onTapGesture {
                 action?(0)
             }

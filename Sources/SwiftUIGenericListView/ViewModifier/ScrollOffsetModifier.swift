@@ -15,18 +15,18 @@ struct ScrollOffsetModifier: ViewModifier {
         content
             .background(GeometryReader { proxy in
                 Color.clear
-                    .preference(key: ScrollOffsetPreferenceKey.self, value: proxy.frame(in: .named("scroll")).minY)
+                    .preference(key: HeightPreferenceKey.self, value: proxy.frame(in: .named("scroll")).minY)
             })
-            .onPreferenceChange(ScrollOffsetPreferenceKey.self) { value in
+            .onPreferenceChange(HeightPreferenceKey.self) { value in
                 offset = value
             }
     }
 }
 
-struct ScrollOffsetPreferenceKey: PreferenceKey {
-    static var defaultValue: CGFloat = 0
-    
-    static func reduce(value: inout CGFloat, nextValue: () -> CGFloat) {
-        value = nextValue()
-    }
-}
+//struct ScrollOffsetPreferenceKey: PreferenceKey {
+//    static var defaultValue: CGFloat = 0
+//    
+//    static func reduce(value: inout CGFloat, nextValue: () -> CGFloat) {
+//        value = nextValue()
+//    }
+//}

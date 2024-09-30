@@ -8,6 +8,8 @@
 import SwiftUI
 
 struct EmojiItemView: View {
+    @Environment(\.colorScheme) var colorScheme
+
     let imgName: String
     let title: String
     
@@ -18,9 +20,9 @@ struct EmojiItemView: View {
             Text(title)
                 .font(.system(size: 12))
                 .padding([.leading, .trailing], 10)
-                .foregroundColor(.secondary)
+                .foregroundColor(colorScheme == .dark ? .white : .secondary)
         }
-        .frame(width: 65, height: 65)
+        .frame(width: 80, height: 65)
         .padding()
     }
 }

@@ -29,22 +29,26 @@ public struct FlowLayoutSectionView: View {
     private func generateContent(in g: GeometryProxy) -> some View {
         var width = CGFloat.zero
         var height = CGFloat.zero
-        
+        var isFirstItemInRow = true
+
         return ZStack(alignment: .topLeading) {
             ForEach(0..<self.items.count, id: \.self) { index in
                 self.items[index]
-                    .background(selectedIndices.contains(index) ? highlightStyle.background : Color.clear)  // Light green background for selected items
+                    .background(selectedIndices.contains(index) ? highlightStyle.selectedBackground : Color.clear)  // Light green background for selected items
                     .foregroundColor((selectedIndices.contains(index) ? highlightStyle.textColor : Color.black))
                     .cornerRadius(13)
                     .overlay(RoundedRectangle(cornerRadius: 13)
                         .stroke((selectedIndices.contains(index) ? highlightStyle.border : Color.gray) ?? Color.clear,
                                 lineWidth: rowStyle?.rowBorderWidth ?? 1))
                     .clipShape(RoundedRectangle(cornerRadius: 13))
-                    .padding([.horizontal, .vertical], 4)
+                    .padding([.top, .bottom], 5)
+                    .padding(.leading, isFirstItemInRow ? 0 : 5)
+                    .padding(.trailing, 5)
                     .alignmentGuide(.leading) { d in
                         if (abs(width - d.width) > g.size.width) {
                             width = 0
                             height -= d.height
+                            isFirstItemInRow = true
                         }
                         
                         let result = width
@@ -53,6 +57,7 @@ public struct FlowLayoutSectionView: View {
                         } else {
                             width -= d.width
                         }
+                        isFirstItemInRow = false
                         return result
                     }
                     .alignmentGuide(.top) { d in
@@ -74,6 +79,7 @@ public struct FlowLayoutSectionView: View {
         }
         .background(viewHeightReader($totalHeight))
     }
+
     
     private func viewHeightReader(_ binding: Binding<CGFloat>) -> some View {
         GeometryReader { geometry -> Color in

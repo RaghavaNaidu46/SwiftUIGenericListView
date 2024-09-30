@@ -11,7 +11,7 @@ struct HeightReader: View {
     var body: some View {
         GeometryReader { geometry in
             Color.clear
-                .preference(key: ContentHeightKey.self, value: geometry.size.height)
+                .preference(key: HeightPreferenceKey.self, value: geometry.size.height)
         }
     }
 }

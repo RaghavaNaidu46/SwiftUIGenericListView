@@ -8,27 +8,17 @@
 import SwiftUI
 
 struct FlowView: View {
+    @Environment(\.colorScheme) var colorScheme
+    
     let title: String
     
     var body: some View {
         VStack{
             Text(title)
                 .font(.system(size: 12))
-                .padding()
+                .padding(12)
                 .frame(height: 26)
+                .foregroundColor((colorScheme == .dark ? Color.white : Color.black))
         }
-    }
-}
-
-struct TitleView: View {
-    let title: String
-    
-    var body: some View {
-        Text(title)
-            .frame(maxWidth: .infinity, idealHeight: 40) // Makes the text frame take up the full width of the screen
-            .multilineTextAlignment(.center) // Centers the text within the frame
-            .font(.title)
-            .clipped()
-            .foregroundColor(.black) // Sets the text color to white
     }
 }
