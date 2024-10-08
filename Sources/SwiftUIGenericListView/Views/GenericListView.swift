@@ -112,7 +112,7 @@ public struct GenericListView: View {
             .background(section .backgroundColor ?? section.sectionStyle?.sectionStyle?.backgroundColor)
         case .vertical(let items):
             VerticalSectionView(items: items,
-                                action: section.action)
+                                action: section.action, vSpacing: section.verticalSpacing)
             .frame(maxWidth: .infinity, alignment: .leading)
             .background(section.backgroundColor ?? section.sectionStyle?.sectionStyle?.backgroundColor)
             
