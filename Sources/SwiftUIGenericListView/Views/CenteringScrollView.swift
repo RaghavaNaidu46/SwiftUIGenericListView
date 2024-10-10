@@ -29,7 +29,7 @@ public struct CenteringScrollView<Content: View>: View {
                         content
                             .background(GeometryReader { contentGeometry in
                                 Color.clear
-                                    .preference(key: ScrollOffsetPreferenceKey.self, value: contentGeometry.size.height)
+                                    .preference(key: ContentHeightKey.self, value: contentGeometry.size.height)
                                     .onAppear {
                                         self.contentWidth = contentGeometry.size.width
                                     }
@@ -49,7 +49,7 @@ public struct CenteringScrollView<Content: View>: View {
                         }
                     }
                 }
-                .onPreferenceChange(ScrollOffsetPreferenceKey.self) { value in
+                .onPreferenceChange(ContentHeightKey.self) { value in
                     self.contentHeight = value
                 }
             }
