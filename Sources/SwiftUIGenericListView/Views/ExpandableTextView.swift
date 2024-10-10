@@ -1,7 +1,7 @@
 import SwiftUI
 import Combine
 
-public class ExpandableTextViewModel: ObservableObject {
+public class ExpandableTextViewModel: ObservableObject, Identifiable {
     var currentColorScheme: ColorScheme
     @Published var text: String {
         didSet {

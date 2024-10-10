@@ -33,7 +33,8 @@ public struct HorizontalSectionView: View {
                                 $0.scaleEffect(selectedIndex == index ? 1.1 : 1.0)
                                     .padding(selectedIndex == index ? 10 : 0)
                             }
-                        
+                            
+                            
                             .animation(.easeInOut(duration: 0.2), value: selectedIndex)
                             .onTapGesture {
                                 selectedIndex = index

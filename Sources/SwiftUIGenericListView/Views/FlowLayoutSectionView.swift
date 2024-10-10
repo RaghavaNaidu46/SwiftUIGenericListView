@@ -13,6 +13,7 @@ public struct FlowLayoutSectionView: View {
     let highlightStyle:HighlightStyle
     let action: ((Set<Int>) -> Void)?
     let bg : Color
+    let enableMultiSelect: Bool?
     @State private var totalHeight = CGFloat.zero
     @State private var selectedIndices = Set<Int>()  // State to track selected items
     
@@ -68,10 +69,15 @@ public struct FlowLayoutSectionView: View {
                         return result
                     }
                     .onTapGesture {
-                        if selectedIndices.contains(index) {
-                            selectedIndices.remove(index)  // Deselect if already selected
-                        } else {
-                            selectedIndices.insert(index)  // Select if not already selected
+                        if enableMultiSelect == true {
+                            if selectedIndices.contains(index) {
+                                selectedIndices.remove(index)  // Deselect if already selected
+                            } else {
+                                selectedIndices.insert(index)  // Select if not already selected
+                            }
+                        }else{
+                            selectedIndices.removeAll()
+                            selectedIndices.insert(index)
                         }
                         action?(selectedIndices)
                     }

@@ -13,6 +13,7 @@ public struct SectionItem: Identifiable, Observable {
     public let centerAlignHorizontal: Bool?
     public let canMagnify: Bool?
     public let canHelight: Bool?
+    public let enableMultiSelect: Bool?
     public let selectedItem: Int?
     public let backgroundColor: Color?
     public let sectionStyle: GenericStyle?
@@ -28,6 +29,7 @@ public struct SectionItem: Identifiable, Observable {
         centerAlignHorizontal: Bool? = false,
         canMagnify: Bool? = false,
         canHelight: Bool? = false,
+        enableMultiSelect: Bool? = false,
         selectedItem: Int? = nil,
         backgroundColor: Color? = nil,
         sectionStyle: GenericStyle? = nil,
@@ -50,5 +52,6 @@ public struct SectionItem: Identifiable, Observable {
         self.canHelight = canHelight
         self.flowAction = flowAction
         self.verticalSpacing = verticalSpacing
+        self.enableMultiSelect = enableMultiSelect
     }
 }

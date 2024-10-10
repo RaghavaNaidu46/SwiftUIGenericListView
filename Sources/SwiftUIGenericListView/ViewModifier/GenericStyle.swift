@@ -27,7 +27,7 @@ public struct SectionStyle{
     public let headerTextAlignment: TextAlignment?
     public let headerFont: Font?
     public let headerColor: Color?
-    public let headerPadding: EdgeInsets?
+    public let headerPadding: CustomPadding?
     public let shadow:CGFloat?
 
     public init(
@@ -36,7 +36,7 @@ public struct SectionStyle{
         headerTextAlignment: TextAlignment? = .leading,
         headerFont: Font? = nil,
         headerColor: Color? = .gray,
-        headerPadding: EdgeInsets? = nil,
+        headerPadding: CustomPadding? = nil,
         shadow:CGFloat? = 0,
         headerWidth: CGFloat? = .zero
         
@@ -102,5 +102,29 @@ public struct HighlightStyle {
         self.selectedBackground = background
         self.border = border
         self.textColor = textColor
+    }
+}
+
+
+
+public struct CustomPadding {
+    public var top: CGFloat
+    public var leading: CGFloat
+    public var bottom: CGFloat
+    public var trailing: CGFloat
+
+    // Custom initializer with default values
+    public init(top: CGFloat = 0, leading: CGFloat = 0, bottom: CGFloat = 0, trailing: CGFloat = 0) {
+        self.top = top
+        self.leading = leading
+        self.bottom = bottom
+        self.trailing = trailing
+    }
+}
+
+
+extension CustomPadding {
+    public func toEdgeInsets() -> EdgeInsets {
+        EdgeInsets(top: top, leading: leading, bottom: bottom, trailing: trailing)
     }
 }

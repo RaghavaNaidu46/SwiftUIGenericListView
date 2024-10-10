@@ -43,8 +43,8 @@ public struct GenericListView: View {
                             }
                         }
                     }
-                    .padding(contentPadding)
                 }
+                .padding(contentPadding)
             }else{
                 VStack(alignment: .leading, spacing: self.headerMinHeight) {
                     if let sectionItems = sections {
@@ -78,7 +78,7 @@ public struct GenericListView: View {
                 //.frame(maxWidth: .infinity)
                     .font(section.sectionStyle?.sectionStyle?.headerFont ?? .headline)
                     .foregroundColor(section.sectionStyle?.sectionStyle?.headerColor ?? .primary)
-                    .padding(section.sectionStyle?.sectionStyle?.headerPadding ?? .init())
+                    .padding(section.sectionStyle?.sectionStyle?.headerPadding?.toEdgeInsets() ?? .init())
                     .padding(.top, 30)
                     .padding([.leading, .trailing])
             } else {
@@ -110,9 +110,10 @@ public struct GenericListView: View {
                                   selectedItem: section.selectedItem,
                                   action: section.action)
             .background(section .backgroundColor ?? section.sectionStyle?.sectionStyle?.backgroundColor)
+            
         case .vertical(let items):
             VerticalSectionView(items: items,
-                                action: section.action, vSpacing: section.verticalSpacing)
+                                action: section.action)
             .frame(maxWidth: .infinity, alignment: .leading)
             .background(section.backgroundColor ?? section.sectionStyle?.sectionStyle?.backgroundColor)
             
@@ -120,13 +121,16 @@ public struct GenericListView: View {
             FlowLayoutSectionView(items: items,
                                   rowStyle: section.sectionStyle?.rowStyle,
                                   highlightStyle: section.sectionStyle?.highlightStyle ?? HighlightStyle(),
-                                  action: section.flowAction, bg:section.backgroundColor ?? .white)
+                                  action: section.flowAction, bg:section.backgroundColor ?? .white,
+                                  enableMultiSelect: section.enableMultiSelect)
             .background(section.backgroundColor ?? section.sectionStyle?.sectionStyle?.backgroundColor)
+            
         case .expandableTextView(let viewModel):
             ExpandableTextField(viewModel: viewModel)
                 .frame(minHeight: viewModel.dynamicHeight, maxHeight: .infinity)
                 .background(section.backgroundColor ?? section.sectionStyle?.sectionStyle?.backgroundColor)
             //.padding([.leading, .trailing])
+            
         case .staticHView(let items):
             StaticHView(items: items,
                         centerAlign: section.centerAlignHorizontal ?? false,
@@ -134,8 +138,11 @@ public struct GenericListView: View {
                         action: section.action,
                         selectedItem: section.selectedItem)
             .background(section.backgroundColor ?? section.sectionStyle?.sectionStyle?.backgroundColor)
+            
         case .singleView(let item):
             StaticButtonView(items: item, centerAlign: section.centerAlignHorizontal ?? false, action: section.action)
+        case .textField(let viewModel):
+            CustomTextFieldView(viewModel: viewModel)
         }
     }
     

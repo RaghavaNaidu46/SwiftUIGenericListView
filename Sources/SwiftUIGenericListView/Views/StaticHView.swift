@@ -22,7 +22,7 @@ struct StaticHView: View {
                         .stroke(selectedItem == index ? Color(UIColor(highlightStyle.border ?? .clear)) : Color.gray, lineWidth: 1))
                     .background(selectedItem == index ? 
                                 highlightStyle.selectedBackground : highlightStyle.initialBackground)
-                    .foregroundColor(.red)
+                    //.foregroundColor(.red)
                     .clipShape(RoundedRectangle(cornerRadius: 10))
                     .onTapGesture {
                         selectedItem = index
