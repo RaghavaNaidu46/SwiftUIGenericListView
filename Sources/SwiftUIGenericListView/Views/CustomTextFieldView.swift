@@ -12,7 +12,7 @@ public struct CustomTextFieldView: View {
 
     public var body: some View {
         VStack(alignment: .leading) {
-            TextField("Enter your name", text: $viewModel.text)
+            TextField(viewModel.placeHolder, text: $viewModel.text)
                 .modifier(viewModel.modifier)
                 .onChange(of: viewModel.text) { newValue in
                     // This will call the action passing the current name as it changes
@@ -74,6 +74,7 @@ public struct CustomTextFieldModifier: ViewModifier {
 
     public func body(content: Content) -> some View {
         content
+            .font(_font)
             .keyboardType(_keyboardType)
             //.textFieldStyle(_borderStyle)
             .autocapitalization(_autocapitalization)
